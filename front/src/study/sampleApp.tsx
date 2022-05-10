@@ -1,45 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
-const BACKEND_URL = "http://localhost:8000";
+addEventListener("DOMContentLoaded", () => {
+  main();
+});
+
+const main = () => {
+  ReactDOM.render(<App />, document.querySelector("#root"));
+};
+
+type TodoArray = { value: string }[];
 
 const App = () => {
   const [todo, setTodo] = useState<TodoArray>([]);
-  useEffect(() => {
-    getTodo().then((todos) => setTodo(todos));
-  }, []);
-
+  const deleteHandler = (deleted: string) => {
+    setTodo(todo.filter((todo) => todo.value !== deleted));
+  };
   return (
     <>
       <h1>シンプルなTodoリスト</h1>
       <TodoInputForm todos={todo} setTodoState={setTodo}></TodoInputForm>
-      <TodoList todos={todo}></TodoList>
+      <TodoList todos={todo} deleteHandler={deleteHandler}></TodoList>
     </>
   );
 };
 
-const getTodo = async () => {
-  const body = await fetch(`${BACKEND_URL}/todo`, {
-    method: "GET",
-    mode: "cors",
-    cache: "no-cache",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const data = (await body.json()) as TodoArray;
-  return data;
-};
-
-type TodoArray = { id: number; value: string }[];
-
 type TodoItemProps = {
+  deleteHandler: (todo: string) => void;
   todo: string;
-  children: React.ReactNode;
 };
 
 const TodoElement: React.VFC<TodoItemProps> = (props) => {
-  return <li>{props.todo}</li>;
+  return (
+    <li>
+      {props.todo}
+      <Button
+        handler={() => {
+          props.deleteHandler(props.todo);
+          console.info(`del: ${props.todo}`);
+        }}
+      >
+        del
+      </Button>
+    </li>
+  );
 };
 
 type ButtonProps = {
@@ -74,17 +78,7 @@ type AddTodoProps = {
 const TodoInputForm = (props: AddTodoProps) => {
   const [textInput, setTextInput] = useState("");
   const addTodoHandler = async () => {
-    const body = await fetch(`${BACKEND_URL}/todo`, {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ value: textInput }),
-    });
-    const data = await body.json();
-    props.setTodoState([...props.todos, { id: data.id, value: data.value }]);
+    props.setTodoState([...props.todos, { value: textInput }]);
   };
   return (
     <div>
@@ -95,6 +89,7 @@ const TodoInputForm = (props: AddTodoProps) => {
 };
 
 type TodoListProps = {
+  deleteHandler: (value: string) => void;
   todos: TodoArray;
 };
 
@@ -103,17 +98,12 @@ const TodoList: React.VFC<TodoListProps> = (props) => {
     <ul>
       {props.todos.map((todo) => {
         return (
-          <TodoElement todo={todo.value}>{todo.id + "-items"}</TodoElement>
+          <TodoElement
+            todo={todo.value}
+            deleteHandler={props.deleteHandler}
+          ></TodoElement>
         );
       })}
     </ul>
   );
 };
-
-const main = () => {
-  ReactDOM.render(<App />, document.querySelector("#root"));
-};
-
-addEventListener("DOMContentLoaded", () => {
-  main();
-});
