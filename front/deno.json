@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
+    "jsx": "react",
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment"
+  },
+  "importMap": "import_map.json",
+  "lint": {
+    "files": {
+      "include": ["src/**/*"],
+      "exclude": []
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": ["src/**/*"],
+      "exclude": []
+    },
+    "options": {
+      "useTabs": false,
+      "lineWidth": 100,
+      "indentWidth": 4,
+      "singleQuote": true,
+      "proseWrap": "always"
+    }
+  },
+  "tasks": {
+    "bundle": "deno bundle ./src/study/sampleApp.tsx ./dist/sample.js",
+    "run": "deno run ./src/study/foo.ts"
+  }
+}
