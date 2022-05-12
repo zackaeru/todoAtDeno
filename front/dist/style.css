@@ -1,0 +1,20 @@
+ul {
+  width: 30em;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+  border-color: gray;
+  border-width: 1px;
+  border-style: solid;
+  padding: 3px;
+  margin-top: 3px;
+}
+
+button {
+  margin: 3px;
+  padding: 3px;
+}
