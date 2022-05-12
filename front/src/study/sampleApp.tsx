@@ -9,35 +9,42 @@ const main = () => {
   ReactDOM.render(<App />, document.querySelector("#root"));
 };
 
-type TodoArray = { value: string }[];
+type Todo = { id: number; value: string };
+
+type TodoArray = Todo[];
 
 const App = () => {
   const [todo, setTodo] = useState<TodoArray>([]);
-  const deleteHandler = (deleted: string) => {
-    setTodo(todo.filter((todo) => todo.value !== deleted));
+  const [id_counter, setIdCounter] = useState<number>(0);
+  const deleteHandler = (deleted: Todo) => {
+    setTodo(todo.filter((todo) => todo.id !== deleted.id));
   };
   return (
     <>
       <h1>シンプルなTodoリスト</h1>
-      <TodoInputForm todos={todo} setTodoState={setTodo}></TodoInputForm>
+      <TodoInputForm
+        todos={todo}
+        setTodoState={setTodo}
+        currentMaxId={id_counter}
+        setIdCounterState={setIdCounter}
+      ></TodoInputForm>
       <TodoList todos={todo} deleteHandler={deleteHandler}></TodoList>
     </>
   );
 };
 
 type TodoItemProps = {
-  deleteHandler: (todo: string) => void;
-  todo: string;
+  deleteHandler: (todo: Todo) => void;
+  todo: Todo;
 };
 
 const TodoElement: React.VFC<TodoItemProps> = (props) => {
   return (
     <li>
-      {props.todo}
+      <div>{props.todo.value}</div>
       <Button
         handler={() => {
           props.deleteHandler(props.todo);
-          console.info(`del: ${props.todo}`);
         }}
       >
         del
@@ -72,13 +79,17 @@ const TextBox: React.VFC<TextBoxProps> = (props) => {
 
 type AddTodoProps = {
   todos: TodoArray;
+  currentMaxId: number;
+  setIdCounterState: React.Dispatch<React.SetStateAction<number>>;
   setTodoState: React.Dispatch<React.SetStateAction<TodoArray>>;
 };
 
 const TodoInputForm = (props: AddTodoProps) => {
   const [textInput, setTextInput] = useState("");
   const addTodoHandler = async () => {
-    props.setTodoState([...props.todos, { value: textInput }]);
+    const newId = ++props.currentMaxId;
+    props.setIdCounterState(newId);
+    props.setTodoState([...props.todos, { id: newId, value: textInput }]);
   };
   return (
     <div>
@@ -89,7 +100,7 @@ const TodoInputForm = (props: AddTodoProps) => {
 };
 
 type TodoListProps = {
-  deleteHandler: (value: string) => void;
+  deleteHandler: (todo: Todo) => void;
   todos: TodoArray;
 };
 
@@ -99,7 +110,7 @@ const TodoList: React.VFC<TodoListProps> = (props) => {
       {props.todos.map((todo) => {
         return (
           <TodoElement
-            todo={todo.value}
+            todo={todo}
             deleteHandler={props.deleteHandler}
           ></TodoElement>
         );
