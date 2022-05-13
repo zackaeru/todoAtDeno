@@ -4,6 +4,7 @@ ul {
 
 li {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   border-radius: 5px;
@@ -12,6 +13,14 @@ li {
   border-style: solid;
   padding: 3px;
   margin-top: 3px;
+}
+
+li div {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 button {
