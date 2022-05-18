@@ -1,4 +1,4 @@
-import { Application, Router, RouterContext, RouterMiddleware, Status } from "oak";
+import { Application, Router, RouterMiddleware, Status } from "oak";
 import { TodoRepo } from "./todo.ts";
 
 const todoRepo = new TodoRepo();
@@ -10,7 +10,7 @@ const PORT = 8000
 const HOSTNAME = "localhost";
 const TODO_PATH:string = "/todo";
 
-//fileからlocalhost通すためにCORS有効にしました
+//fileからlocalhost通すためにCORS有効にしました(テスト用劇ゆる設定注意)
 const experimentalCorsResponse:RouterMiddleware<string> = async (ctx, next) => {
   ctx.response.headers.set("Access-Control-Allow-Origin", "*");
   ctx.response.headers.set("Access-Control-Allow-Methods", "*");

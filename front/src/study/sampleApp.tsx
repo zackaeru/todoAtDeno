@@ -49,12 +49,13 @@ type TodoItemProps = {
 };
 
 const TodoElement: React.VFC<TodoItemProps> = (props) => {
+  const { todo, deleteHandler } = props;
   return (
     <li>
-      <div>{props.todo.value}</div>
+      <div>{todo.value}</div>
       <Button
         handler={() => {
-          props.deleteHandler(props.todo);
+          deleteHandler(props.todo);
         }}
       >
         del
@@ -87,17 +88,18 @@ const TextBox: React.VFC<TextBoxProps> = (props) => {
   );
 };
 
-type AddTodoProps = {
+type TodoArrayProps = {
   todos: TodoArray;
   setTodoState: React.Dispatch<React.SetStateAction<TodoArray>>;
 };
 
-const TodoInputForm = (props: AddTodoProps) => {
+const TodoInputForm = (props: TodoArrayProps) => {
+  const { todos, setTodoState } = props;
   const [textInput, setTextInput] = useState("");
   const addTodoHandler = async () => {
     if (textInput) {
       const newTodo = await addTodo(textInput);
-      props.setTodoState([...props.todos, newTodo]);
+      setTodoState([...todos, newTodo]);
     }
   };
   return (
@@ -121,25 +123,19 @@ const addTodo = async (newTodoValue: string) => {
   return (await body.json()) as Todo;
 };
 
-type TodoListProps = {
-  setTodoState: React.Dispatch<React.SetStateAction<TodoArray>>;
-  todos: TodoArray;
-};
-
-const TodoList: React.VFC<TodoListProps> = (props) => {
+const TodoList: React.VFC<TodoArrayProps> = (props) => {
+  const { todos, setTodoState } = props;
   const deleteHandler = async (deletedTodo: Todo) => {
     const result = await deleteTodo(deletedTodo.id);
     if (result) {
-      props.setTodoState(
-        props.todos.filter((todo) => todo.id !== deletedTodo.id)
-      );
+      setTodoState(todos.filter((todo) => todo.id !== deletedTodo.id));
     } else {
       console.error(`削除ミスったけどダマだぜ。${JSON.stringify(deletedTodo)}`);
     }
   };
   return (
     <ul>
-      {props.todos.map((todo) => {
+      {todos.map((todo) => {
         return (
           <TodoElement todo={todo} deleteHandler={deleteHandler}></TodoElement>
         );
