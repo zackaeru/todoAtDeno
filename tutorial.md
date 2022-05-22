@@ -2,18 +2,20 @@
 
 # きっかけ
 
-1 年前の v1.0.0 リリース時に見かけた Deno、当時は興味を持ちながらもお試しを先送りしていたが、1 年で目にする機会も多くなり気になったのでお試ししてみた。
+1 年前の v1.0.0 リリース時に見かけた Deno、当時は興味を持ちながらもお試しを先送りしていましたが、1 年経った今、目にする機会も多くなり気になったのでお試ししてみました。
 
 # お試し結果
 
-- インポートの管理(import_map) やタスクランナー(Tasks) など、実開発で必須だが足りなかった部品が標準として登場、使い勝手が向上している。
-- ESM の標準サポートで node.js で利用できるメジャーなモジュールはほぼ使える模様。しかし依存関係が多いものはそこが起点となって使えなくなるケースあり。
-- 利用する中での苦労はまだまだ多い。使う中でプラットフォームのバグに当たったり、サンプルが無く Github の issue や、コードを読んでなんとか使ったりするようなケースが多々ある。
-- 標準プラットフォームに全部入りという利点は大きいと感じた。現時点でもツール系で力を発揮する可能性あり。
+- インポートの管理(import_map) やタスクランナー(Tasks) など、実開発で必須だが足りなかった部品が標準として登場、使い勝手が向上しているよう感じました。
+- ESM の標準サポートで node.js で利用できるメジャーなモジュールはほぼ使える模様。しかし依存関係が多いものはそこが起点となって使えなくなるか、動かすのに相当苦労するケースがあります。
+- 利用する中での苦労はまだまだ多いようです。使う中でサンプルが無く Github の issue や、コードを読んでなんとか使うようなケースが多々あリます。
+- 標準プラットフォームに全部入りという利点は大きいと感じました。現時点でもツール系で力を発揮する可能性があるかと思います。
 
 # コード置き場
 
-[https://github.com/zackaeru/todoAtDeno](https://github.com/zackaeru/todoAtDeno)
+https://github.com/zackaeru/todoAtDeno
+
+フロントだけで動く版：https://github.com/zackaeru/todoAtDeno/tree/feature/frontOnly
 
 # React で Todo リスト @ Deno
 
@@ -47,17 +49,16 @@ VSCode 拡張のインストール
 }
 ```
 
-shell のオートコンプリート設定を行う。  
-[公式の解説](https://deno.land/manual@v1.21.1/getting_started/setup_your_environment)から。
+[公式の解説](https://deno.land/manual@v1.21.1/getting_started/setup_your_environment)から shell のオートコンプリート設定を行う。
 
 そして早速、Hello, World を表示してみる。  
-適当に VScode で以下内容のファイル(ここでは`foo.ts`と名付けた)を用意。内容的には JS でしかないけど。
+適当に 以下内容のファイル(ここでは`foo.ts`と名付けた)を用意。内容的には JS でしかないけど。
 
 ```typescript
 console.info(“hello, world”);
 ```
 
-deno に食わせると実行してくれた！追加で何か入れる必要全くなし。これが TypeScript ネイティブの力だよ。
+`deno`に食わせると実行してくれた！追加で何か入れる必要全くなし。これが TypeScript ネイティブの力だよ。
 
 ```bash
 deno run foo.ts
@@ -75,11 +76,14 @@ deno run foo.ts
 │   └── settings.json
 └── front
     ├── deno.json
+    ├── import_map.json
     ├── dist
+    │   ├── sample.js
+    │   ├── style.css
     │   └── index.html
     └── src
         └── study
-            ├── foo.ts #先程のハロワもここに仲良くつっこんである。。。
+            ├── foo.ts #先程のハロワもここに仲良くつっこんである。。。特に深い意味はない。
             └── sampleApp.tsx
 ```
 
@@ -116,8 +120,8 @@ deno run foo.ts
 }
 ```
 
-いつの間にか[タスクランナー](https://deno.land/manual@v1.20.1/tools/task_runner)が登場しているのでタスクを定義してみる(( `.vscode/setting.json`に`"deno.unstable": true`を設定しておく必要あり ))。現状は unstable だけど。
-構文は npm script と似ている。`deno.json`の`tasks`に定義
+いつの間にか[タスクランナー](https://deno.land/manual@v1.20.1/tools/task_runner)が登場しているのでタスクを定義してみる(( `.vscode/setting.json`に`"deno.unstable": true`を設定しておく必要あり ))。
+構文は npm script と似ている。`deno.json`の`tasks`に以下定義
 
 ```json
 "tasks": {
@@ -137,7 +141,7 @@ Deno は ES Module を利用できるので import で ES Module の URL を指�
 - [https://www.skypack.dev/:title]
 - [https://esm.sh/:title]
 
-特に理由はないが、今回はドキュメントが豊富な skypack を利用することにした。  
+今回はドキュメントが豊富な skypack を利用することにした。(( どれか一つしか使えないということはない ))  
 URL 末端に`?dst`を付与することで TypeScript 向けの型情報が利用できる。なお、CDN ごとにこの辺の URL 仕様は異なる模様。
 
 空の`sampleApp.tsx`を作成して、import 文に URL を指定。
@@ -162,7 +166,7 @@ deno info ./src/study/sampleApp.tsx
 見られるのはいいんだけど、依存モジュールのバージョン固定したり無理くりバージョンあげるにはどうすれば良いんだろう。。。今後要調査 ((多分一年後くらい。。。))
 
 ライブラリのバージョンアップごとに import 文を書き換えるのも面倒なので、import_map を利用する。
-`/front`以下に`import_map.json`を追加。以下を記載する。
+`import_map.json`を追加。以下を記載する。
 
 ```json
   "imports": {
@@ -385,8 +389,8 @@ const TodoList: React.VFC<TodoListProps> = (props) => {
 };
 ```
 
-最後の最後で問題発生。`Material UI`か`React Bootstrap`で見栄えを良くしようと考えてインポート、ソース書いてバンドルしたところ、エラー発生で動かなくなる。  
- 依存ライブラリが増えると Deno さんで不具合出る可能性が上がるのかも。対応に時間かかりそうなので今回は以下自前 CSS で最低限の見た目を整えた。そして Todo リストが完成。
+以上でバンドルして`index.html`を開くと無事 Todo リストが開き動作したのだが、最後の最後で問題発生。`Material UI`か`React Bootstrap`で見栄えを良くしようと考えてインポート、ソース書いてバンドルしたところ、エラー発生で動かなくなる。  
+依存ライブラリが増えると Deno さんで不具合出る可能性が上がるのかも。対応に時間かかりそうなので今回は以下自前 CSS で最低限の見た目を整えた。そして Todo リストが完成。
 
 ```css
 ul {
@@ -437,10 +441,13 @@ button {
 ├─── front
 │    └── 略
 └─── back
+    ├── .vscode
+    │   └── setting.json #deno拡張にlibを認識させるため
     ├── deno.json
+    ├── import_map.json
     └── src
-            ├── foo.ts
-            └── sampleApp.tsx
+        ├── server.ts
+        └── todo.ts
 ```
 
 ## プロジェクト設定(バックエンド)
@@ -449,21 +456,42 @@ button {
 `import_map.json` を作成し、oak を追加。
 `server.ts` を作成し、import から oak を参照するようにする。
 
-```json
+- import_map.json
 
+```json
+{
+  "imports": {
+    "oak": "https://deno.land/x/oak@v10.5.1/mod.ts",
+    "./": "./"
+  }
+}
+```
+
+- server.ts
+
+```typescript
+import { Application } from "oak";
 ```
 
 フロントの部分で記載した、`deno.json`の`lib`が解決されない問題が発生するため、`back/.vscode/setting.json`を作成してバックエンド単体で VSCode を開く。
 
 ```json
-
+{
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  }
+}
 ```
 
 ## サーバ作り
 
 後はコードを書くのみ。以下コード掲載します。
+`file:///`にて React アプリを開くことに固執したため少し複雑になってしった。。。
 
-back/src/server.ts
+- back/src/server.ts
 
 ```typescript
 import { Application, Router, RouterMiddleware, Status } from "oak";
@@ -532,7 +560,7 @@ app.use(router.allowedMethods());
 await app.listen({ hostname: HOSTNAME, port: PORT });
 ```
 
-back/src/todo.ts
+- back/src/todo.ts
 
 ```typescript
 export type Todo = {

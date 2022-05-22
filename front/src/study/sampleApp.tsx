@@ -70,7 +70,8 @@ type ButtonProps = {
 };
 
 const Button: React.VFC<ButtonProps> = (props) => {
-  return <button onClick={props.handler}>{props.children}</button>;
+  const { handler, children } = props;
+  return <button onClick={handler}>{children}</button>;
 };
 
 type TextBoxProps = {
